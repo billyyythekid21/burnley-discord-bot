@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import youtube_dl
 import asyncio
 import os
 from requests import get
@@ -19,72 +18,6 @@ TOKEN="MzY2MzkxOTMzNjM2OTY4NDQ4.Gl1tdP.IknjVX6F9aE_I5XQnAOf9QgyXlk_7CaGBBhnyM"
 games = {}
 
 #musicplayer
-
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user.name}")
-    await client.change_presence(status=discord.Status.online, activity=discord.CustomActivity('DAMNNNNNN!!!!!!!'))
-
-@bot.command()
-async def join(ctx):
-    channel = ctx.message.author.voice.channel
-    await channel.connect()
-
-@bot.command()
-async def leave(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_connected():
-        await voice_client.disconnect()
-
-@bot.command()
-async def play(ctx, url):
-    voice_client = ctx.message.guild.voice_client
-    if not voice_client.is_playing():
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-        }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            url2 = info["formats"][0]["url"]
-
-        voice_client.play(discord.FFmpegPCMAudio(url2), after=lambda e: print(f"Finished playing: {e}"))
-        voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-        voice_client.source.volume = 0.5
-        await ctx.send("Now playing: " + url)
-    else:
-        await ctx.send("I'm already playing a song mate!")
-
-@bot.command()
-async def pause(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_playing():
-        voice_client.pause()
-        await ctx.send("Playback paused.")
-    else:
-        await ctx.send("I'm not currently playing anything mate.")
-
-@bot.command()
-async def resume(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_paused():
-        voice_client.resume()
-        await ctx.send("Playback resumed.")
-    else:
-        await ctx.send("Playback ain't paused mate.")
-
-@bot.command()
-async def stop(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_playing():
-        voice_client.stop()
-        await ctx.send("Playback stopped.")
-    else:
-        await ctx.send("I'm not currently playing anything mate.")
 
 #memegenerator
 
