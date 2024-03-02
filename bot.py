@@ -23,6 +23,7 @@ games = {}
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name}")
+    await client.change_presence(status=discord.Status.online, activity=discord.CustomActivity('DAMNNNNNN!!!!!!!'))
 
 @bot.command()
 async def join(ctx):
