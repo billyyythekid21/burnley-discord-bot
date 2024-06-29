@@ -7,7 +7,7 @@ import requests
 class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.reddit = praw.Reddit(client_id="v-XPRBwxYlmOxCLGvhasGw", client_secret="oPqkwz2Bfn8Sf__aHHnaZzraDPNLQQ",user_agent="script://Burnley:v1.0 (by u/DatHopeGames)")
+        self.reddit = praw.Reddit(client_id="BLANK", client_secret="BLANK",user_agent="script://Burnley:v1.0 (by u/BLANK)")
 
 
     @commands.Cog.listener()
