@@ -2,7 +2,10 @@ import discord
 from discord.ext import commands
 import google.generativeai as genai
 
-GEMINI_API_KEY = 'BLANK'
+with open("../tokens/googleaikey.txt") as file:
+    token = file.read().strip()
+
+GEMINI_API_KEY = str(token)
 
 genai.configure(api_key=GEMINI_API_KEY)
 

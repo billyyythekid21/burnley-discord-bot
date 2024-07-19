@@ -1,9 +1,10 @@
-import discord, wikipediaapi
+import discord
 from discord.ext import commands
+import wikipediaapi
 import random
 
 try:
-    wiki = wikipediaapi.Wikipedia('en', user_agent="Burnley/1.0 (https://billyyythekid21.github.io/; billyyythekid21@gmail.com)")
+    wiki = wikipediaapi.Wikipedia('en', user_agent="blank")
     print("Wikipedia initialisation successful")
 except TypeError as e:
     print(f"TypeError: {e}")
@@ -33,7 +34,7 @@ class Wiki(commands.Cog):
         else:
             await ctx.send("Sorry, no results found on Wikipedia.")
 
-    @commands.hybrid_command(name="wiki_url", description="Obtain a URL to a page on Wikipedia")
+    @commands.hybrid_command(name="wikiurl", description="Obtain a URL to a page on Wikipedia")
     async def url(self, ctx, *, query):
         page = wiki.page(query)
         if page.exists():

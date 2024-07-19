@@ -3,11 +3,18 @@ from discord.ext import commands
 from random import choice
 import asyncpraw as praw
 import requests
+import csv
 
 class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.reddit = praw.Reddit(client_id="BLANK", client_secret="BLANK",user_agent="script://Burnley:v1.0 (by u/BLANK)")
+        with open("../tokens/reddittokens.txt") as file:
+            file = csv.DictReader(file, delimiter=',')
+            for token in file:
+                client_id = token["client_id"].strip()
+                client_secret = token["client_secret"].strip()
+                user_agent = token["user_agent"].strip()
+        self.reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
 
 
     @commands.Cog.listener()

@@ -45,14 +45,14 @@ async def main():
     """
     async with client:
         await load()
-        with open("token.txt") as file:
+        with open("../tokens/discordtoken.txt") as file:
             token = file.read().strip()
         await client.start(token)
 
 @client.command(name="sync")
 @commands.has_permissions(administrator=True)  # Ensure only administrators can use this command
 async def sync(ctx):
-    # Synchronize the commands
+    # Synchronise the commands
     try:
         await client.tree.sync()
         await ctx.send("Commands have been synchronised.")
