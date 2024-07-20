@@ -49,7 +49,7 @@
     font-size: large;
 }
 
-/* index divs */
+/* divs */
 #indexcover {
     width: 100%;
     height: 100vh; /* Use full viewport height */
@@ -69,6 +69,13 @@
 }
 
 .aboutcol1, .aboutcol2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#infoabout {
     display: flex;
     justify-content: center;
     align-items: center;
