@@ -6,3 +6,7 @@
  - fun chat responses
  - games
  - news
+
+
+-Billy Wu 2024
+-Melbourne, Victoria, Australia

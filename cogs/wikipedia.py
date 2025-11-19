@@ -4,7 +4,11 @@ import wikipediaapi
 import random
 
 try:
-    wiki = wikipediaapi.Wikipedia('en', user_agent="blank")
+    wiki = wikipediaapi.Wikipedia(
+        language='en',
+        extract_format=wikipediaapi.ExtractFormat.WIKI,
+        user_agent="BurnleyDiscordBot/1.0 (https://github.com/billyyythekid21)"
+    )
     print("Wikipedia initialisation successful")
 except TypeError as e:
     print(f"TypeError: {e}")
