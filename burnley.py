@@ -12,7 +12,7 @@ client.remove_command("help")
 # Define a cycle of statuses for the bot to display
 bot_status = cycle([
     "My default prefix is $", "Hi guys!", "Ready to rumble!", 
-    "Change the world!", "I am tired.", "Programmed by billyyythekid21!"
+    "Change the world!", "I am tired.", "Programmed by Billy Wu!"
 ])
 
 @tasks.loop(seconds=2)
