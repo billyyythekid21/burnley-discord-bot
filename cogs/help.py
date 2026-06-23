@@ -33,7 +33,7 @@ class Help(commands.Cog):
         help_embed.add_field(name="skip", value="Skips the current song.", inline=False)
         help_embed.add_field(name="setprefix", value="Sets a custom prefix for Burnley for this server only.", inline=False)
         help_embed.add_field(name="userinfo", value="Displays the information of the requested user.", inline=False)
-        help_embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+        help_embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url)
     
         await ctx.send(embed=help_embed)
 

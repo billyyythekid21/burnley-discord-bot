@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from random import choice
 import asyncpraw as praw
-import requests
+import aiohttp
 import csv
 
 class Fun(commands.Cog):
@@ -21,85 +21,78 @@ class Fun(commands.Cog):
     async def on_ready(self):
         print("fun.py is ready!")
 
-    @commands.hybrid_command(name="cat", description="Fetches a cute cat picture.", with_app_command = True, aliases=["cats", "kitty"])
+    async def _fetch_reddit_image(self, ctx: commands.Context, subreddit_name: str, title: str):
+        subreddit = await self.reddit.subreddit(subreddit_name)
+        posts_list = []
+
+        async for post in subreddit.hot(limit=30):
+            if not post.over_18 and any(post.url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif"]):
+                author_name = post.author.name if post.author else "N/A"
+                posts_list.append((post.url, author_name))
+
+        if posts_list:
+            random_post = choice(posts_list)
+            embed = discord.Embed(title=title, colour=discord.Colour.random())
+            embed.set_author(name=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar)
+            embed.set_image(url=random_post[0])
+            embed.set_footer(text=f"u/{random_post[1]}")
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"Unable to fetch from r/{subreddit_name}, please try again later.")
+
+    @commands.hybrid_command(name="cat", description="Fetches a cute cat picture.", with_app_command=True,
+                             aliases=["cats", "kitty"])
     async def cat(self, ctx: commands.Context):
+        await self._fetch_reddit_image(ctx, "cats", "Cat!")
 
-        subreddit = await self.reddit.subreddit("cats")
-        posts_list = []
-
-        async for post in subreddit.hot(limit=30):
-            if not post.over_18 and post.author is not None and any(post.url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif"]):
-                author_name = post.author.name
-                posts_list.append((post.url, author_name))
-            if post.author is None:
-                posts_list.append((post.url, "N/A"))
-        
-        if posts_list:
-
-            random_post = choice(posts_list)
-
-            meme_embed = discord.Embed(title="Cat!", colour=discord.Colour.random())
-            meme_embed.set_author(name=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar)
-            meme_embed.set_image(url=random_post[0])
-            meme_embed.set_footer(text=f"Author: r/{random_post[1]}", icon_url=None)
-            await ctx.send(embed=meme_embed)
-
-        else:
-            await ctx.send("Unable to fetch cats from reddit, please try again later.")
-
-    @commands.hybrid_command(name="dog", description="Fetches a cute dog picture.", with_app_command = True, aliases=["dogs"])
+    @commands.hybrid_command(name="dog", description="Fetches a cute dog picture.", with_app_command=True,
+                             aliases=["dogs"])
     async def dog(self, ctx: commands.Context):
+        await self._fetch_reddit_image(ctx, "dog", "Dog!")
 
-        subreddit = await self.reddit.subreddit("dog")
-        posts_list = []
-
-        async for post in subreddit.hot(limit=30):
-            if not post.over_18 and post.author is not None and any(post.url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif"]):
-                author_name = post.author.name
-                posts_list.append((post.url, author_name))
-            if post.author is None:
-                posts_list.append((post.url, "N/A"))
-        
-        if posts_list:
-
-            random_post = choice(posts_list)
-
-            meme_embed = discord.Embed(title="Dog!", colour=discord.Colour.random())
-            meme_embed.set_author(name=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar)
-            meme_embed.set_image(url=random_post[0])
-            meme_embed.set_footer(text=f"Author: r/{random_post[1]}", icon_url=None)
-            await ctx.send(embed=meme_embed)
-
-        else:
-            await ctx.send("Unable to fetch dogs from reddit, please try again later.")
-
-    @commands.hybrid_command(name="meme", description="Fetches a meme from Reddit.", with_app_command = True, aliases=["memes", "dankmeme"])
+    @commands.hybrid_command(name="meme", description="Fetches a meme from Reddit.", with_app_command=True,
+                             aliases=["memes", "dankmeme"])
     async def meme(self, ctx: commands.Context):
+        await self._fetch_reddit_image(ctx, "memes", "Meme")
 
-        subreddit = await self.reddit.subreddit("memes")
-        posts_list = []
+    @commands.hybrid_command(name="news", description="Fetches the latest news on a topic.", with_app_command=True,
+                                 aliases=["headlines"])
+    async def news(self, ctx: commands.Context, *, topic: str = "technology"):
+        async with aiohttp.ClientSession() as session:
+            with open("../tokens/newsapitoken.txt") as f:
+                api_key = f.read().strip()
 
-        async for post in subreddit.hot(limit=30):
-            if not post.over_18 and post.author is not None and any(post.url.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif"]):
-                author_name = post.author.name
-                posts_list.append((post.url, author_name))
-            if post.author is None:
-                posts_list.append((post.url, "N/A"))
-        
-        if posts_list:
+            params = {
+                "q": topic,
+                "pageSize": 5,
+                "sortBy": "publishedAt",
+                "apiKey": api_key,
+                "language": "en"
+            }
 
-            random_post = choice(posts_list)
+            async with session.get("https://newsapi.org/v2/everything", params=params) as response:
+                if response.status != 200:
+                    return await ctx.send("Failed to fetch news. Please try again later.")
 
-            meme_embed = discord.Embed(title="Meme", colour=discord.Colour.random())
-            meme_embed.set_author(name=f"Meme requested by {ctx.author.name}", icon_url=ctx.author.avatar)
-            meme_embed.set_image(url=random_post[0])
-            meme_embed.set_footer(text=f"Author: r/{random_post[1]}", icon_url=None)
-            await ctx.send(embed=meme_embed)
+                data = await response.json()
+                articles = data.get("articles", [])
 
-        else:
-            await ctx.send("Unable to fetch any memes from reddit, please try again later.")
+                if not articles:
+                    return await ctx.send(f"No news found for **{topic}**.")
 
-    @commands.hybrid_command(name="oilup", description="Don't even ask about this.", with_app_command = True, aliases=["oil", "oilup!"])
+                embed = discord.Embed(title=f"Top news: {topic}", colour=discord.Colour.blue())
+                embed.set_author(name=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar)
+
+                for article in articles:
+                    title = article.get("title", "No title")
+                    url = article.get("url", "")
+                    source = article.get("source", {}).get("name", "Unknown")
+                    embed.add_field(name=f"{source}", value=f"[{title}]({url})", inline=False)
+
+                await ctx.send(embed=embed)
+
+    @commands.hybrid_command(name="oilup", description="Don't even ask about this.", with_app_command = True,
+                             aliases=["oil", "oilup!"])
     async def oilup(self, ctx, user: discord.Member=None):
         if user is None:
             user = ctx.author
@@ -111,22 +104,23 @@ class Fun(commands.Cog):
         await user.send("https://tenor.com/view/noel-noel-deyzel-oil-noel-oil-oil-up-gif-15231228810340005316")
 
     def cog_unload(self):
-        self.bot.loop.create_task(self.reddit.close())
+        self.client.loop.create_task(self.reddit.close())
 
-    @commands.hybrid_command(name="quote", description="Sends you a random inspirational quote.", aliases=["quotes", "inspire"])
+    @commands.hybrid_command(name="quote", description="Sends you a random inspirational quote.",
+                             aliases=["quotes", "inspire"])
     async def quote(self, ctx, user: discord.Member = None):
-        response = requests.get("https://api.quotable.io/random")
-        if response.status_code == 200:
-            message = response.json()
-            quote = f"{message['content']} - {message['author']}"
-            if user is None:
-                user = ctx.author
-                await ctx.send(quote)
-            else:
-                await ctx.send(f"{user.mention}, check your DMs for an inspirational quote!")
-                await user.send(quote)
-        else:
-            await ctx.send("Failed to retrieve a quote. Please try again later.")
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.quotable.io/random") as response:
+                if response.status == 200:
+                    message = await response.json()
+                    quote = f"{message['content']} - {message['author']}"
+                    if user is None:
+                        await ctx.send(quote)
+                    else:
+                        await ctx.send(f"{user.mention}, check your DMs for an inspirational quote!")
+                        await user.send(quote)
+                else:
+                    await ctx.send("Failed to retrieve a quote. Please try again later.")
 
 async def setup(client):
    await client.add_cog(Fun(client))
