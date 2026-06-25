@@ -53,7 +53,8 @@ class Music(commands.Cog):
             url, title = self.queue.pop(0)
             self.current_title = title
             source = await discord.FFmpegOpusAudio.from_probe(url, **FFMPEG_OPTIONS)
-            ctx.voice_client.play(source, after=lambda _: self.client.loop.create_task(self.play_next(ctx)))
+            loop = asyncio.get_event_loop()
+            ctx.voice_client.play(source, after=lambda _: asyncio.run_coroutine_threadsafe(self.play_next(ctx), loop))
             await ctx.send(f'Now playing: **{title}**')
         else:
             self.current_title = None

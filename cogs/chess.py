@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import cogs.chess as chess
+import chess
 import chess.svg
 from io import BytesIO
 import cairosvg

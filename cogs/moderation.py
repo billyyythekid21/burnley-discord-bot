@@ -12,11 +12,9 @@ class Moderation(commands.Cog):
     @commands.hybrid_command(name="ban", description="Bans the specified user from the server.", with_app_command = True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, modreason):
-        # Ban the member
-        await ctx.guild.ban(member)
+        await ctx.guild.ban(member, reason=modreason)
         
-        # Confirmation message
-        conf_embed = discord.Embed(title="Ban successful!", color=discord.Colour.green)
+        conf_embed = discord.Embed(title="Ban successful!", color=discord.Colour.green())
         conf_embed.add_field(name="Banned", value=f"{member.mention} has been banned from the server by {ctx.author.mention}.", inline=False)
         conf_embed.add_field(name="Reason:", value=modreason, inline=False)
 
@@ -32,11 +30,9 @@ class Moderation(commands.Cog):
     @commands.hybrid_command(name="kick", description="Kicks the specified user from the server.", with_app_command = True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, modreason):
-        # Kick the member
-        await ctx.guild.kick(member)
+        await ctx.guild.kick(member, reason=modreason)
         
-        # Confirmation message
-        conf_embed = discord.Embed(title="Kick successful!", color=discord.Colour.green)
+        conf_embed = discord.Embed(title="Kick successful!", color=discord.Colour.green())
         conf_embed.add_field(name="Kicked", value=f"{member.mention} has been kicked from the server by {ctx.author.mention}.", inline=False)
         conf_embed.add_field(name="Reason:", value=modreason, inline=False)
 
