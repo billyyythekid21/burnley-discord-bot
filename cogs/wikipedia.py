@@ -1,7 +1,5 @@
-import discord
 from discord.ext import commands
 import wikipediaapi
-import random
 
 try:
     wiki = wikipediaapi.Wikipedia(
