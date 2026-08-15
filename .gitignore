@@ -1,3 +1,21 @@
+# IDE
 .idea/
-leveldata.json
+.vscode/
+
+# macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Bot data
+token.txt
+leveldata.json
+
+# Test files
+test.html
