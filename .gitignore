@@ -4,18 +4,49 @@
 
 # macOS
 .DS_Store
+**/.DS_Store
 
 # Python
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyd
 .venv/
 venv/
+env/
 *.egg-info/
+dist/
+build/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Secrets / tokens
+token.txt
+*token*.txt
+*secret*.txt
 
 # Bot data
-token.txt
 leveldata.json
+
+# Logs
+*.log
+logs/
 
 # Test files
 test.html
